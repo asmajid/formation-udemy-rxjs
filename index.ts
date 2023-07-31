@@ -1,12 +1,23 @@
 import { Observable } from 'rxjs';
-// Empty Observable
+
+//Next Notification
 const observable$ = new Observable<string>((subscriber) => {
   console.log('Observable executed');
+  subscriber.next('Alice');
 });
 
-console.log('Before subscribe');
+console.log('Before');
 observable$.subscribe((value) => console.log(value));
-console.log('After subscribe');
+console.log('After');
+
+// // Empty Observable
+// const observable$ = new Observable<string>((subscriber) => {
+//   console.log('Observable executed');
+// });
+
+// console.log('Before subscribe');
+// observable$.subscribe((value) => console.log(value));
+// console.log('After subscribe');
 
 //créer un observable en utilisant la classe Observable de RxJS qui émet trois valeurs de manière asynchrone
 //subscription est établi pour écouter ces valeurs et les afficher dans la console au fur et à mesure qu'elles sont émises
