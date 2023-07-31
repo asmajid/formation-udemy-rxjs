@@ -1,9 +1,25 @@
-import './style.css';
+import { Observable } from 'rxjs';
 
-import { of, map } from 'rxjs';
+//créer un observable en utilisant la classe Observable de RxJS qui émet trois valeurs de manière asynchrone
+//subscription est établi pour écouter ces valeurs et les afficher dans la console au fur et à mesure qu'elles sont émises
+const observable$ = new Observable<string>((subscriber) => {
+  console.log('Observable executed');
+  subscriber.next('test-1');
+  setTimeout(() => subscriber.next('test-2'), 2000);
+  setTimeout(() => subscriber.next('test-3'), 4000);
+});
+// const subscription = observable$.subscribe((value) => console.log(value));
 
-of('World')
-  .pipe(map((name) => `Hello, ${name}!`))
-  .subscribe(console.log);
+// setTimeout(() => {
+//   console.log('Unsubscribe');
+//   subscription.unsubscribe();
+// }, 2000);
 
-// Open the console in the bottom right to see results.
+
+console.log('Subscription 1 starts');
+observable$.subscribe((value) => console.log('Subscription 1:', value));
+
+setTimeout(() => {
+  console.log('Subscription 2 starts');
+  observable$.subscribe((value) => console.log('Subscription 2:', value));
+}, 1000);
