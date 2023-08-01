@@ -6,6 +6,7 @@ import {
   of,
   EMPTY,
   Subject,
+  BehaviorSubject,
 } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import {
@@ -15,23 +16,48 @@ import {
   debounceTime,
   catchError,
   concatMap,
+  withLatestFrom,
 } from 'rxjs/operators';
 
-//Subject  in action
-const emitButton = document.querySelector('button#emit');
-const inputElement: HTMLInputElement = document.querySelector('#value-input');
-const subscribeButton = document.querySelector('button#subscribe');
+//Behaviorsubject in action
+const loggedInSpan: HTMLElement = document.querySelector('span#logged-in');
+const loginButton: HTMLElement = document.querySelector('button#login');
+const logoutButton: HTMLElement = document.querySelector('button#logout');
+const printStateButton: HTMLElement =
+  document.querySelector('button#print-state');
 
-const value$ = new Subject<string>();
+const isLoggedIn$ = new BehaviorSubject<boolean>(false);
+fromEvent(loginButton, 'click').subscribe(() => isLoggedIn$.next(true));
+fromEvent(logoutButton, 'click').subscribe(() => isLoggedIn$.next(false));
+isLoggedIn$.subscribe(
+  (isLoggedIn) => (loggedInSpan.innerText = isLoggedIn.toString())
+);
 
-fromEvent(emitButton, 'click')
-  .pipe(map(() => inputElement.value))
-  .subscribe(value$);
-
-fromEvent(subscribeButton, 'click').subscribe(() => {
-  console.log('New Subscription');
-  value$.subscribe((value) => console.log(value));
+isLoggedIn$.subscribe((isLoggedIn) => {
+  logoutButton.style.display = isLoggedIn ? 'block' : 'none';
+  loginButton.style.display = !isLoggedIn ? 'block' : 'none';
 });
+fromEvent(printStateButton, 'click')
+  .pipe(withLatestFrom(isLoggedIn$))
+  .subscribe(([event, isLoggedIn]) =>
+    console.log('User is logged in:', isLoggedIn)
+  );
+
+// //Subject  in action
+// const emitButton = document.querySelector('button#emit');
+// const inputElement: HTMLInputElement = document.querySelector('#value-input');
+// const subscribeButton = document.querySelector('button#subscribe');
+
+// const value$ = new Subject<string>();
+
+// fromEvent(emitButton, 'click')
+//   .pipe(map(() => inputElement.value))
+//   .subscribe(value$);
+
+// fromEvent(subscribeButton, 'click').subscribe(() => {
+//   console.log('New Subscription');
+//   value$.subscribe((value) => console.log(value));
+// });
 
 // // Flattening error second solution
 // const endpointInput: HTMLInputElement = document.querySelector('input#endpoint');
