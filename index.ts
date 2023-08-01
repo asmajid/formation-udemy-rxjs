@@ -1,15 +1,37 @@
 import { Observable } from 'rxjs';
 
-//More next notifications
-const observable$ = new Observable<string>((subscriber) => {
+//Complete Notification
+const observable$ = new Observable<string>(subscriber => {
   console.log('Observable executed');
-  subscriber.next('test-1');
-  subscriber.next('test-2');
-  setTimeout(() => subscriber.complete(), 3000);
+  subscriber.next('Alice');
+  subscriber.next('Ben');
+  setTimeout(() => {
+    subscriber.next('Charlie');
+    subscriber.complete();
+  }, 2000);
+
+  return () => {
+    console.log('Teardown');
+  };
 });
-console.log('Before');
-observable$.subscribe((value) => console.log(value));
-console.log('After');
+
+console.log('Before subscribe');
+observable$.subscribe({
+  next: value => console.log(value),
+  complete: () => console.log('Completed')
+});
+console.log('After subscribe');
+
+// //More next notifications
+// const observable$ = new Observable<string>((subscriber) => {
+//   console.log('Observable executed');
+//   subscriber.next('test-1');
+//   subscriber.next('test-2');
+//   setTimeout(() => subscriber.complete(), 3000);
+// });
+// console.log('Before');
+// observable$.subscribe((value) => console.log(value));
+// console.log('After');
 
 // //Next Notification
 // const observable$ = new Observable<string>((subscriber) => {
