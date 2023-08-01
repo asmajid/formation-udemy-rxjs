@@ -16,24 +16,41 @@ import {
   concatMap,
 } from 'rxjs/operators';
 
-// Flattening Error
-const endpointInput: HTMLInputElement =
-  document.querySelector('input#endpoint');
-const fetchButton = document.querySelector('button');
+// Flattening error second solution
+const endpointInput: HTMLInputElement = document.querySelector('input#endpoint');
+const fetchButton = document.querySelector('button#fetch');
 
-fromEvent(fetchButton, 'click')
-  .pipe(
-    map(() => endpointInput.value),
-    concatMap((value) =>
-      ajax(`https://random-data-api.com/api/${value}/random_${value}`)
-    ),
-    catchError(() => EMPTY)
+fromEvent(fetchButton, 'click').pipe(
+  map(() => endpointInput.value),
+  concatMap(value =>
+    ajax(`https://random-data-api.com/api/${value}/random_${value}`).pipe(
+      catchError(error => of(`Could not fetch data: ${error}`))
+    )
   )
-  .subscribe({
-    next: (value) => console.log(value),
-    error: (err) => console.log('Error:', err),
-    complete: () => console.log('Completed'),
-  });
+).subscribe({
+  next: value => console.log(value),
+  error: err => console.log('Error:', err),
+  complete: () => console.log('Completed')
+});
+
+// // Flattening Error
+// const endpointInput: HTMLInputElement =
+//   document.querySelector('input#endpoint');
+// const fetchButton = document.querySelector('button');
+
+// fromEvent(fetchButton, 'click')
+//   .pipe(
+//     map(() => endpointInput.value),
+//     concatMap((value) =>
+//       ajax(`https://random-data-api.com/api/${value}/random_${value}`)
+//     ),
+//     catchError(() => EMPTY)
+//   )
+//   .subscribe({
+//     next: (value) => console.log(value),
+//     error: (err) => console.log('Error:', err),
+//     complete: () => console.log('Completed'),
+//   });
 
 // //Flatttening operators - Dynamic HTTP
 // const endpointInput: HTMLInputElement =
