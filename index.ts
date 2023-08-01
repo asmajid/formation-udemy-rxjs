@@ -1,11 +1,35 @@
 import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 
-//Creation functions work
-ourOwnOf('Alice', 'Ben', 'Charlie').subscribe({
-  next: value => console.log(value),
-  complete: () => console.log('Completed')
+//Fromevent
+const triggerButton = document.querySelector('#monBouton');
+
+const triggerClick$ = new Observable<MouseEvent>((subscriber) => {
+  const clickHandlerFn = (event) => {
+    console.log('Event callback executed');
+    subscriber.next(event);
+  };
+
+  triggerButton.addEventListener('click', clickHandlerFn);
+
+  return () => {
+    triggerButton.removeEventListener('click', clickHandlerFn);
+  };
 });
+
+const subscription = triggerClick$.subscribe((event) =>
+  console.log(event.type, event.x, event.y)
+);
+
+setTimeout(() => {
+  console.log('Unsubscribe');
+  subscription.unsubscribe();
+}, 5000);
+// //Creation functions work
+// ourOwnOf('Alice', 'Ben', 'Charlie').subscribe({
+//   next: value => console.log(value),
+//   complete: () => console.log('Completed')
+// });
 
 // const names$ = new Observable<string>(subscriber => {
 //   subscriber.next('Alice');
@@ -20,8 +44,8 @@ ourOwnOf('Alice', 'Ben', 'Charlie').subscribe({
 // });
 
 function ourOwnOf(...args: string[]): Observable<string> {
-  return new Observable<string>(subscriber => {
-    for(let i = 0; i < args.length; i++) {
+  return new Observable<string>((subscriber) => {
+    for (let i = 0; i < args.length; i++) {
       subscriber.next(args[i]);
     }
     subscriber.complete();
