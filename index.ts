@@ -1,32 +1,57 @@
 import { Observable } from 'rxjs';
+import { combineLatest, fromEvent } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 
-//Error Scenario
-const a$ = new Observable(subscriber => {
-  setTimeout(() => {
-    subscriber.next('A');
-    subscriber.complete();
-  }, 5000);
+//Combinelatest
+const temperatureInput = document.getElementById('temperature-input');
+const conversionDropdown = document.getElementById('conversion-dropdown');
+const resultText = document.getElementById('result-text');
 
-  return () => {
-    console.log('A teardown');
-  };
-});
+const temperatureInputEvent$ = fromEvent(temperatureInput, 'input');
+const conversionInputEvent$ = fromEvent(conversionDropdown, 'input');
 
-const b$ = new Observable(subscriber => {
-  setTimeout(() => {
-    subscriber.error('Failure!');
-  }, 3000);
-  
-  return () => {
-    console.log('B teardown');
-  };
-});
+combineLatest([temperatureInputEvent$, conversionInputEvent$]).subscribe(
+  ([temperatureInputEvent, conversionInputEvent]) => {
+    const temperature = Number(temperatureInputEvent.target['value']);
+    const conversion = conversionInputEvent.target['value'];
 
-forkJoin([a$, b$]).subscribe({
-  next: value => console.log(value),
-  error: err => console.log('Error:', err)
-});
+    let result: number;
+    if (conversion === 'f-to-c') {
+      result = ((temperature - 32) * 5) / 9;
+    } else if (conversion === 'c-to-f') {
+      result = (temperature * 9) / 5 + 32;
+    }
+
+    resultText.innerText = String(result);
+  }
+);
+
+// //Error Scenario
+// const a$ = new Observable(subscriber => {
+//   setTimeout(() => {
+//     subscriber.next('A');
+//     subscriber.complete();
+//   }, 5000);
+
+//   return () => {
+//     console.log('A teardown');
+//   };
+// });
+
+// const b$ = new Observable(subscriber => {
+//   setTimeout(() => {
+//     subscriber.error('Failure!');
+//   }, 3000);
+
+//   return () => {
+//     console.log('B teardown');
+//   };
+// });
+
+// forkJoin([a$, b$]).subscribe({
+//   next: value => console.log(value),
+//   error: err => console.log('Error:', err)
+// });
 
 // //Forkjoin Multiple Http Requests
 // const randomName$ = ajax('https://random-data-api.com/api/name/random_name');
@@ -40,12 +65,12 @@ forkJoin([a$, b$]).subscribe({
 // forkJoin([randomName$, randomNation$, randomFood$]).subscribe(
 //   ([nameAjax, nationAjax, foodAjax]) => console.log(`${nameAjax.response.first_name} is from ${nationAjax.response.capital} and likes to eat ${foodAjax.response.dish}.`)
 
-// //Interval 
+// //Interval
 // console.log('App started');
 
 // const interval$ = new Observable<number>(subscriber => {
 //   let counter = 0;
-  
+
 //   const intervalId = setInterval(() => {
 //     console.log('Timeout!');
 //     subscriber.next(counter++);
