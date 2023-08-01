@@ -1,20 +1,26 @@
-import { Observable } from 'rxjs';
-// import { combineLatest, fromEvent } from 'rxjs';
+import { Observable, fromEvent, combineLatest, forkJoin, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { forkJoin } from 'rxjs';
-import { map, tap, filter } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { map, tap, filter, debounceTime } from 'rxjs/operators';
 
-//Tap
-of(1, 7, 3, 6, 2)
+//debounce Time
+const sliderInput = document.querySelector('input#slider');
+fromEvent(sliderInput, 'input')
   .pipe(
-    filter((value) => value > 5),
-    map((value) => value * 2),
-    tap({
-      next: (value) => console.log('Spy:', value),
-    })
+    debounceTime(20),
+    map((event) => event.target['value'])
   )
-  .subscribe((value) => console.log('Output:', value));
+  .subscribe((value) => console.log(value));
+
+// //Tap
+// of(1, 7, 3, 6, 2)
+//   .pipe(
+//     filter((value) => value > 5),
+//     map((value) => value * 2),
+//     tap({
+//       next: (value) => console.log('Spy:', value),
+//     })
+//   )
+//   .subscribe((value) => console.log('Output:', value));
 
 // //Map
 // const randomFirstName$ = ajax<any>(
