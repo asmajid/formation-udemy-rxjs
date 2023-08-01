@@ -5,6 +5,7 @@ import {
   forkJoin,
   of,
   EMPTY,
+  Subject,
 } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import {
@@ -16,22 +17,38 @@ import {
   concatMap,
 } from 'rxjs/operators';
 
-// Flattening error second solution
-const endpointInput: HTMLInputElement = document.querySelector('input#endpoint');
-const fetchButton = document.querySelector('button#fetch');
+//Subject  in action
+const emitButton = document.querySelector('button#emit');
+const inputElement: HTMLInputElement = document.querySelector('#value-input');
+const subscribeButton = document.querySelector('button#subscribe');
 
-fromEvent(fetchButton, 'click').pipe(
-  map(() => endpointInput.value),
-  concatMap(value =>
-    ajax(`https://random-data-api.com/api/${value}/random_${value}`).pipe(
-      catchError(error => of(`Could not fetch data: ${error}`))
-    )
-  )
-).subscribe({
-  next: value => console.log(value),
-  error: err => console.log('Error:', err),
-  complete: () => console.log('Completed')
+const value$ = new Subject<string>();
+
+fromEvent(emitButton, 'click')
+  .pipe(map(() => inputElement.value))
+  .subscribe(value$);
+
+fromEvent(subscribeButton, 'click').subscribe(() => {
+  console.log('New Subscription');
+  value$.subscribe((value) => console.log(value));
 });
+
+// // Flattening error second solution
+// const endpointInput: HTMLInputElement = document.querySelector('input#endpoint');
+// const fetchButton = document.querySelector('button#fetch');
+
+// fromEvent(fetchButton, 'click').pipe(
+//   map(() => endpointInput.value),
+//   concatMap(value =>
+//     ajax(`https://random-data-api.com/api/${value}/random_${value}`).pipe(
+//       catchError(error => of(`Could not fetch data: ${error}`))
+//     )
+//   )
+// ).subscribe({
+//   next: value => console.log(value),
+//   error: err => console.log('Error:', err),
+//   complete: () => console.log('Completed')
+// });
 
 // // Flattening Error
 // const endpointInput: HTMLInputElement =
