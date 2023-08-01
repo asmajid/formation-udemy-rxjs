@@ -7,21 +7,39 @@ import {
   EMPTY,
 } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, tap, filter, debounceTime, catchError } from 'rxjs/operators';
+import {
+  map,
+  tap,
+  filter,
+  debounceTime,
+  catchError,
+  concatMap,
+} from 'rxjs/operators';
 
-//Catcherror
-const failingHttpRequest$ = new Observable((subscriber) => {
-  setTimeout(() => {
-    subscriber.error(new Error('Timeout'));
-  }, 3000);
+//Flatttening operators - Static example
+const source$ = new Observable((subscriber) => {
+  setTimeout(() => subscriber.next('A'), 2000);
+  setTimeout(() => subscriber.next('B'), 5000);
 });
 
-console.log('App started');
+console.log('App has started');
+source$
+  .pipe(concatMap((value) => of(1, 2)))
+  .subscribe((value) => console.log(value));
 
-failingHttpRequest$.pipe(catchError((error) => EMPTY)).subscribe({
-  next: (value) => console.log(value),
-  complete: () => console.log('Completed'),
-});
+// //Catcherror
+// const failingHttpRequest$ = new Observable((subscriber) => {
+//   setTimeout(() => {
+//     subscriber.error(new Error('Timeout'));
+//   }, 3000);
+// });
+
+// console.log('App started');
+
+// failingHttpRequest$.pipe(catchError((error) => EMPTY)).subscribe({
+//   next: (value) => console.log(value),
+//   complete: () => console.log('Completed'),
+// });
 
 // //debounce Time
 // const sliderInput = document.querySelector('input#slider');
