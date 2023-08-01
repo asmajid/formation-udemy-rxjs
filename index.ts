@@ -1,27 +1,38 @@
 import { Observable } from 'rxjs';
 // import { combineLatest, fromEvent } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-// import { filter } from "rxjs/operators";
 import { forkJoin } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap, filter } from 'rxjs/operators';
+import { of } from 'rxjs';
 
-//Map 
-const randomFirstName$ = ajax<any>(
-  'https://random-data-api.com/api/name/random_name'
-).pipe(map((ajaxResponse) => ajaxResponse.response.first_name));
+//Tap
+of(1, 7, 3, 6, 2)
+  .pipe(
+    filter((value) => value > 5),
+    map((value) => value * 2),
+    tap({
+      next: (value) => console.log('Spy:', value),
+    })
+  )
+  .subscribe((value) => console.log('Output:', value));
 
-const randomCapital$ = ajax<any>(
-  'https://random-data-api.com/api/nation/random_nation'
-).pipe(map((ajaxResponse) => ajaxResponse.response.capital));
+// //Map
+// const randomFirstName$ = ajax<any>(
+//   'https://random-data-api.com/api/name/random_name'
+// ).pipe(map((ajaxResponse) => ajaxResponse.response.first_name));
 
-const randomDish$ = ajax<any>(
-  'https://random-data-api.com/api/food/random_food'
-).pipe(map((ajaxResponse) => ajaxResponse.response.dish));
+// const randomCapital$ = ajax<any>(
+//   'https://random-data-api.com/api/nation/random_nation'
+// ).pipe(map((ajaxResponse) => ajaxResponse.response.capital));
 
-forkJoin([randomFirstName$, randomCapital$, randomDish$]).subscribe(
-  ([firstName, capital, dish]) =>
-    console.log(`${firstName} is from ${capital} and likes to eat ${dish}.`)
-);
+// const randomDish$ = ajax<any>(
+//   'https://random-data-api.com/api/food/random_food'
+// ).pipe(map((ajaxResponse) => ajaxResponse.response.dish));
+
+// forkJoin([randomFirstName$, randomCapital$, randomDish$]).subscribe(
+//   ([firstName, capital, dish]) =>
+//     console.log(`${firstName} is from ${capital} and likes to eat ${dish}.`)
+// );
 
 // //Filter
 // interface NewsItem {
