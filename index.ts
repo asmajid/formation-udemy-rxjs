@@ -16,16 +16,29 @@ import {
   concatMap,
 } from 'rxjs/operators';
 
-//Flatttening operators - Static example
-const source$ = new Observable((subscriber) => {
-  setTimeout(() => subscriber.next('A'), 2000);
-  setTimeout(() => subscriber.next('B'), 5000);
-});
+//Flatttening operators - Dynamic HTTP
+const endpointInput: HTMLInputElement =
+  document.querySelector('input#endpoint');
+const fetchButton = document.querySelector('#button');
 
-console.log('App has started');
-source$
-  .pipe(concatMap((value) => of(1, 2)))
+fromEvent(fetchButton, 'click')
+  .pipe(
+    map(() => endpointInput.value),
+    concatMap((value) =>
+      ajax(`https://random-data-api.com/api/${value}/random_${value}`)
+    )
+  )
   .subscribe((value) => console.log(value));
+
+// //Flatttening operators - Static example
+// const source$ = new Observable((subscriber) => {
+//   setTimeout(() => subscriber.next('A'), 2000);
+//   setTimeout(() => subscriber.next('B'), 5000);
+// });
+// console.log('App has started');
+// source$
+//   .pipe(concatMap((value) => of(1, 2)))
+//   .subscribe((value) => console.log(value));
 
 // //Catcherror
 // const failingHttpRequest$ = new Observable((subscriber) => {
