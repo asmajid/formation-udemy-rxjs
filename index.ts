@@ -1,15 +1,36 @@
-import { Observable, fromEvent, combineLatest, forkJoin, of } from 'rxjs';
+import {
+  Observable,
+  fromEvent,
+  combineLatest,
+  forkJoin,
+  of,
+  EMPTY,
+} from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, tap, filter, debounceTime } from 'rxjs/operators';
+import { map, tap, filter, debounceTime, catchError } from 'rxjs/operators';
 
-//debounce Time
-const sliderInput = document.querySelector('input#slider');
-fromEvent(sliderInput, 'input')
-  .pipe(
-    debounceTime(20),
-    map((event) => event.target['value'])
-  )
-  .subscribe((value) => console.log(value));
+//Catcherror
+const failingHttpRequest$ = new Observable((subscriber) => {
+  setTimeout(() => {
+    subscriber.error(new Error('Timeout'));
+  }, 3000);
+});
+
+console.log('App started');
+
+failingHttpRequest$.pipe(catchError((error) => EMPTY)).subscribe({
+  next: (value) => console.log(value),
+  complete: () => console.log('Completed'),
+});
+
+// //debounce Time
+// const sliderInput = document.querySelector('input#slider');
+// fromEvent(sliderInput, 'input')
+//   .pipe(
+//     debounceTime(20),
+//     map((event) => event.target['value'])
+//   )
+//   .subscribe((value) => console.log(value));
 
 // //Tap
 // of(1, 7, 3, 6, 2)
