@@ -1,24 +1,50 @@
 import { Observable } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 
-//Hot Observable
-const helloButton = document.querySelector('button#hello');
-const helloClick$ = new Observable<MouseEvent>(subscriber => {
-  helloButton.addEventListener('click', (event: MouseEvent) => {
-    subscriber.next(event);
-  });
+//Creation functions work
+ourOwnOf('Alice', 'Ben', 'Charlie').subscribe({
+  next: value => console.log(value),
+  complete: () => console.log('Completed')
 });
 
-helloClick$.subscribe(
-  event => console.log('Sub 1:', event.type, event.x, event.y)
-);
+// const names$ = new Observable<string>(subscriber => {
+//   subscriber.next('Alice');
+//   subscriber.next('Ben');
+//   subscriber.next('Charlie');
+//   subscriber.complete();
+// });
 
-setTimeout(() => {
-  console.log('Subscription 2 starts');
-  helloClick$.subscribe(
-    event => console.log('Sub 2:', event.type, event.x, event.y)
-  );
-}, 5000);
+// names$.subscribe({
+//   next: value => console.log(value),
+//   complete: () => console.log('Completed')
+// });
+
+function ourOwnOf(...args: string[]): Observable<string> {
+  return new Observable<string>(subscriber => {
+    for(let i = 0; i < args.length; i++) {
+      subscriber.next(args[i]);
+    }
+    subscriber.complete();
+  });
+}
+// //Hot Observable
+// const helloButton = document.querySelector('button#hello');
+// const helloClick$ = new Observable<MouseEvent>(subscriber => {
+//   helloButton.addEventListener('click', (event: MouseEvent) => {
+//     subscriber.next(event);
+//   });
+// });
+
+// helloClick$.subscribe(
+//   event => console.log('Sub 1:', event.type, event.x, event.y)
+// );
+
+// setTimeout(() => {
+//   console.log('Subscription 2 starts');
+//   helloClick$.subscribe(
+//     event => console.log('Sub 2:', event.type, event.x, event.y)
+//   );
+// }, 5000);
 
 // //Cold Observable
 // const ajax$ = ajax<any>('https://random-data-api.com/api/name/random_name');
