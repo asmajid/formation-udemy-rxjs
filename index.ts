@@ -16,19 +16,38 @@ import {
   concatMap,
 } from 'rxjs/operators';
 
-//Flatttening operators - Dynamic HTTP
+// Flattening Error
 const endpointInput: HTMLInputElement =
   document.querySelector('input#endpoint');
-const fetchButton = document.querySelector('#button');
+const fetchButton = document.querySelector('button');
 
 fromEvent(fetchButton, 'click')
   .pipe(
     map(() => endpointInput.value),
     concatMap((value) =>
       ajax(`https://random-data-api.com/api/${value}/random_${value}`)
-    )
+    ),
+    catchError(() => EMPTY)
   )
-  .subscribe((value) => console.log(value));
+  .subscribe({
+    next: (value) => console.log(value),
+    error: (err) => console.log('Error:', err),
+    complete: () => console.log('Completed'),
+  });
+
+// //Flatttening operators - Dynamic HTTP
+// const endpointInput: HTMLInputElement =
+//   document.querySelector('input#endpoint');
+// const fetchButton = document.querySelector('#button');
+
+// fromEvent(fetchButton, 'click')
+//   .pipe(
+//     map(() => endpointInput.value),
+//     concatMap((value) =>
+//       ajax(`https://random-data-api.com/api/${value}/random_${value}`)
+//     )
+//   )
+//   .subscribe((value) => console.log(value));
 
 // //Flatttening operators - Static example
 // const source$ = new Observable((subscriber) => {
